@@ -5,7 +5,7 @@ require_once '../../main/functions.php';
 
 <div id="ingrDetailsContainer">
 	<form action="store.php?method=add" method="POST">
-		<span>Nome:</span>
+		<label for="ingredientName"></label>>Nome:</span>
 		<input type="text" name="ingredientName" placeholder="Nome ingrediente..." required="">
 		<br/>
 		<input type="submit" value="Aggiungi"/>

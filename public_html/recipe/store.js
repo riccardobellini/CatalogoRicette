@@ -98,6 +98,62 @@ CR.RecipeStore = (function() {
         });
 
         $('.category').autocomplete(categ_autocomplete_opt);
+
+        $('#newIngrBtn').on('click', function(event) {
+            event.preventDefault();
+            $('#ingrModal').show();
+        });
+
+        $('#ingrModal .close').on('click', function(event) {
+            $('#ingrModal').hide();
+        });
+
+        $('#newCategBtn').on('click', function(event) {
+            event.preventDefault();
+            $('#categModal').show();
+        });
+
+        $('#categModal .close').on('click', function(event) {
+            $('#categModal').hide();
+        });
+
+        $('#addNewIngrBtn').on('click', function() {
+            _addNewIngredient();
+        });
+
+        $('#addNewCategBtn').on('click', function() {
+            _addNewCategory();
+        });
+    };
+
+    function _addNewIngredient() {
+        $.ajax({
+            url: '../ingredient/store.php?method=add',
+            type: 'POST',
+            data: $('#newIngrForm').serialize(),
+            async: true
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('#ingrModal').hide();
+        });
+    };
+
+    function _addNewCategory() {
+        $.ajax({
+            url: '../category/store.php?method=add',
+            type: 'POST',
+            data: $('#newCategForm').serialize(),
+            async: true
+        })
+        .fail(function() {
+            console.log("error");
+        })
+        .always(function() {
+            $('#categModal').hide();
+        });
     };
 
     return {

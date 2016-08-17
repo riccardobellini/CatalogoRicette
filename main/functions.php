@@ -126,4 +126,30 @@ function addingredient($name) {
     $statement->execute(array($name));
 }
 
+function addrecipe($title, $ingredients, $categories, $volume, $year) {
+    $pdo = Database::connect();
+    $pdo->beginTransaction();
+    try {
+        $ins_rec_sql = 'INSERT INTO RICETTA (TITOLO) VALUES(TRIM(?))';
+        $ins_rec_stmt = $pdo->prepare($ins_rec_sql);
+        $ins_rec_stmt->execute(array($title));
+
+        $recipeId = $pdo->lastInsertId();
+
+        if (count($ingredients) > 0) {
+            $ins_ingr_sql = 'INSERT INTO RICETTA_INGREDIENTE (ID_RICETTA, ID_INGREDIENTE) VALUES (?, ?)';
+            $ins_ingr_stmt = $pdo->prepare($ins_ingr_sql);
+            foreach ($ingredients as $key => $value) {
+                $ins_rec_stmt->execute(array($recipeId, $value));
+            }
+        }
+
+        $pdo->commit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        $pdo->rollBack();
+    }
+    Database::disconnect();
+}
+
 ?>
