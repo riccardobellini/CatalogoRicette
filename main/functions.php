@@ -140,7 +140,15 @@ function addrecipe($title, $ingredients, $categories, $volume, $year) {
             $ins_ingr_sql = 'INSERT INTO RICETTA_INGREDIENTE (ID_RICETTA, ID_INGREDIENTE) VALUES (?, ?)';
             $ins_ingr_stmt = $pdo->prepare($ins_ingr_sql);
             foreach ($ingredients as $key => $value) {
-                $ins_rec_stmt->execute(array($recipeId, $value));
+                $ins_ingr_stmt->execute(array($recipeId, $value));
+            }
+        }
+
+        if (count($categories) > 0) {
+            $ins_categ_sql = 'INSERT INTO RICETTA_CATEGORIA (ID_RICETTA, ID_CATEGORIA) VALUES (?, ?)';
+            $ins_categ_stmt = $pdo->prepare($ins_categ_sql);
+            foreach ($categories as $key => $value) {
+                $ins_categ_stmt->execute(array($recipeId, $value));
             }
         }
 
@@ -151,5 +159,13 @@ function addrecipe($title, $ingredients, $categories, $volume, $year) {
     }
     Database::disconnect();
 }
+
+function recipelist() {
+    $pdo = Database::connect();
+    $sql = 'SELECT ID, TITOLO FROM RICETTA ORDER BY TITOLO';
+    Database::disconnect();
+    return $pdo->query($sql);
+}
+
 
 ?>

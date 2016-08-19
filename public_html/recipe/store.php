@@ -1,6 +1,7 @@
 <?php
+require_once '../../main/functions.php';
 
-if (isset($_POST['method']) && $_POST['method'] === 'add') {
+if (isset($_GET['method']) && $_GET['method'] === 'add') {
     $recipeId = $_POST['recipeId'];
     $isEdit = false;
     
@@ -24,19 +25,20 @@ if (isset($_POST['method']) && $_POST['method'] === 'add') {
             }
         }
 
-        $volumeNum = $_POST['volumeNum'];
-        $yearNum = $_POST['yearNum'];
+        $volumeNum = issetor($_POST['volumeNum'], 0);
+        $yearNum = issetor($_POST['yearNum'], 0);
 
-        
+        addrecipe($name, $ingredients, $categories, $volumeNum, $yearNum);        
     }
 }
+
+$bookList = bookList();
 
 ?>
 
 
 <?php
 include '../header.php';
-require_once '../../main/functions.php';
 ?>
 
 <script type="text/javascript" src="store.js"></script>
@@ -53,7 +55,7 @@ require_once '../../main/functions.php';
             <form action="../ingredient/store.php?method=add" method="POST" id="newIngrForm">
                 <label for="ingredientName">Nome:</label>
                 <input type="text" name="ingredientName" placeholder="Nome ingrediente..." required="">
-                <p><button type="button" id="addNewIngrBtn">Aggiungi</button></p>
+                <p><button type="submit" id="addNewIngrBtn">Aggiungi</button></p>
             </form>
         </div>
     </div>
@@ -71,7 +73,7 @@ require_once '../../main/functions.php';
             <form action="../category/store.php?method=add" method="POST" id="newCategForm">
                 <label for="categoryName">Nome:</label>
                 <input type="text" name="categoryName" placeholder="Nome categoria..." required="">
-                <p><button type="button" id="addNewCategBtn">Aggiungi</button></p>
+                <p><button type="submit" id="addNewCategBtn">Aggiungi</button></p>
             </form>
         </div>
     </div>
@@ -135,6 +137,17 @@ require_once '../../main/functions.php';
 
         <!-- Trigger/Open The Modal -->
         <button id="newCategBtn">Nuova categoria</button>
+
+        <h3>Rivista/Libro</h3>
+
+        <p>
+            <label for="bookName">Titolo:</label>
+            <select name="bookName">
+            <?php foreach ($bookList as $row) { ?>
+                <option value="<?php echo htmlspecialchars($row['ID']); ?>"><?php echo $row['TITOLO']; ?></option>                
+            <?php } ?>
+            </select>
+        </p>
 
         <div style="margin-top: 2em;">
             <p>

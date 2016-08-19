@@ -117,22 +117,19 @@ CR.RecipeStore = (function() {
             $('#categModal').hide();
         });
 
-        $('#addNewIngrBtn').on('click', function() {
+        $('#newIngrForm').on('submit', function(event) {
+            event.preventDefault();
             _addNewIngredient();
         });
 
-        $('#addNewCategBtn').on('click', function() {
+        $('#newCategForm').on('submit', function(event) {
+            event.preventDefault();
             _addNewCategory();
         });
     };
 
     function _addNewIngredient() {
-        $.ajax({
-            url: '../ingredient/store.php?method=add',
-            type: 'POST',
-            data: $('#newIngrForm').serialize(),
-            async: true
-        })
+        $.post('../ingredient/store.php?method=add', $('#newIngrForm').serialize())
         .fail(function() {
             console.log("error");
         })
@@ -142,12 +139,7 @@ CR.RecipeStore = (function() {
     };
 
     function _addNewCategory() {
-        $.ajax({
-            url: '../category/store.php?method=add',
-            type: 'POST',
-            data: $('#newCategForm').serialize(),
-            async: true
-        })
+        $.post('../category/store.php?method=add', $('#newCategForm').serialize())
         .fail(function() {
             console.log("error");
         })
