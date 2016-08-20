@@ -1,7 +1,16 @@
 <?php require_once '../../main/functions.php'; ?>
 
 <?php
-$recipeList = recipelist();
+
+if (isset($_GET['do']) && $_GET['do'] === 'search') {
+    $recTitle = key_exists_or('title', $_GET, '');
+    $ingrName = key_exists_or('ingredient', $_GET, '');
+    $categoryId = key_exists_or('category', $_GET, '');
+    $recipeList = search_recipe($recTitle, $ingrName, $categoryId);
+} else {
+    $recipeList = recipelist();    
+}
+
 ?>
 
 <table style="max-width: 40%;" border="1">
@@ -20,7 +29,7 @@ $recipeList = recipelist();
                 <a href="store.php?recipeId=<?php echo htmlspecialchars($row['ID']); ?>"><?php echo htmlspecialchars($row['TITOLO']); ?></a>
             </td>
             <td>
-                <button type="button">Rimuovi</button>
+                <button type="button" onclick="CR.RecipeList.remove('<?php echo htmlspecialchars($row['ID']); ?>')">Rimuovi</button>
             </td>
         </tr>
 <?php

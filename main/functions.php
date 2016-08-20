@@ -9,6 +9,9 @@ function issetor(&$var, $defaultValue = false) {
     return isset($var) ? $var : $defaultValue;
 }
 
+function key_exists_or($key, $array, $defaultValue = false) {
+    return array_key_exists($key, $array) ? $array[$key] : $defaultValue;
+}
 
 
 
@@ -167,5 +170,51 @@ function recipelist() {
     return $pdo->query($sql);
 }
 
+function search_recipe($recipeTitle, $ingredientName, $categoryId) {
+    $pdo = Database::connect();
+    $sql = 'SELECT DISTINCT R.ID, R.TITOLO FROM RICETTA R JOIN RICETTA_INGREDIENTE RI ON R.ID = RI.ID_RICETTA JOIN INGREDIENTE I ON I.ID = RI.ID_INGREDIENTE JOIN RICETTA_CATEGORIA RC ON RI.ID_RICETTA = RC.ID_CATEGORIA ';
+    $hasWhere = false;
+    $recTitleParam = '';
+    $ingrNameParam = '';
+    if (trim($recipeTitle) !== '') {
+        $hasWhere = true;
+        $sql .= ' WHERE LOWER(R.TITOLO) LIKE LOWER(?) ';
+        $recTitleParam = '%'.trim($recipeTitle).'%';
+    }
+    if (trim($ingredientName) !== '') {
+        if (!$hasWhere) {
+            $sql .= ' WHERE ';
+            $hasWhere = true;
+        } else {
+            $sql .= ' AND ';
+        }
+        $sql .= 'LOWER(I.NOME) LIKE LOWER(?) ';
+        $ingrNameParam = '%'.trim($ingredientName).'%';
+    }
+    if (trim($categoryId) !== '') {
+        if (!$hasWhere) {
+            $sql .= ' WHERE ';
+            $hasWhere = true;
+        } else {
+            $sql .= ' AND ';
+        }
+        $sql .= 'C.ID = ? ';
+    }
+    $sql .= ' ORDER BY R.TITOLO';
+    $param = array();
+    if (trim($recipeTitle) !== '') {
+        array_push($param, $recTitleParam);
+    }
+    if (trim($ingredientName) !== '') {
+        array_push($param, $ingrNameParam);
+    }
+    if (trim($categoryId) !== '') {
+        array_push($param, trim($categoryId));
+    }
+    $statement = $pdo->prepare($sql);
+    $statement->execute($param);
+    Database::disconnect();
+    return $statement;
+}
 
 ?>
