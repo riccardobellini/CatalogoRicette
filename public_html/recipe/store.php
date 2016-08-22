@@ -83,9 +83,9 @@ include '../header.php';
 <div id="recipeDetailsContainer">
     <form action="store.php?method=add" method="POST">
         <h2>Dati Ricetta</h2>
-        <input type="hidden" name="recipeId" value="<?php echo issetor($recId); ?>" autofocus="autofocus">
+        <input type="hidden" name="recipeId" value="<?php echo issetor($recId); ?>">
         <span>Nome:</span>
-        <input type="text" name="recipeName" placeholder="Nome ricetta..." required="">
+        <input type="text" name="recipeName" style="width: 30%;" placeholder="Nome ricetta..." required="" autofocus="autofocus">
         <br/>
         
         <h3>Ingredienti</h3>
