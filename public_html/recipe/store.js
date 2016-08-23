@@ -24,7 +24,7 @@ CR.RecipeStore = (function() {
                 console.log("error: " + error);
                 console.log(xhr.responseText);
             })
-            
+
         },
         select: function (event, ui) {
             var elemNum = $(this).attr('id').split('_')[1];
@@ -33,37 +33,10 @@ CR.RecipeStore = (function() {
         minLength: 3
     };
 
-    var categ_autocomplete_opt = {
-        source : function (request, response) {
-            $.ajax({
-                url: '../category/search.php',
-                type: 'GET',
-                dataType: 'json',
-                data: {query: request.term},
-                cache: false,
-                async: true
-            })
-            .done(function(data) {
-                response($.map(data, function(item, index) {
-                    return {value: item.name, key: item.id};
-                }));
-            })
-            .fail(function(xhr, status, error) {
-                console.log("error: " + error);
-                console.log(xhr.responseText);
-            })
-            
-        },
-        select: function (event, ui) {
-            var elemNum = $(this).attr('id').split('_')[1];
-            $('#categoryId_' + elemNum).val(ui.item.key);
-        },
-        minLength: 3
-    };
-
     var init = function () {
         ingrCount = $('#ingredientsTable tbody tr').length;
-        
+        console.log('Number of ingredients: ' + ingrCount);
+
         $('#ingredientsTable').on('click', '.addIngredient', function(event) {
             event.preventDefault();
             ++ingrCount;
@@ -80,16 +53,20 @@ CR.RecipeStore = (function() {
 
         $('.ingredient').autocomplete(ingr_autocomplete_opt);
 
+        categCount = $('#categoriesTable tbody tr').length;
+        console.log('Number of categories: ' + categCount);
 
-        categCount = $('#categorieTable tbody tr').length;
-        
         $('#categoriesTable').on('click', '.addCategory', function(event) {
             event.preventDefault();
             ++categCount;
-            var str = '<tr><td><input type="hidden" name="categoryId[]" id="categoryId_' + categCount +'"><input type="text" autocomplete="off" class="category" name="categoryName[]" id="categoryName_' + categCount + '"></td><td><button id="removeCategory_' + categCount + '" class="removeCategory">Rimuovi</button></td></tr>';
-            var newTr = $(str);
-            $('#categoriesTable tbody').append(newTr);
-            $('.category', newTr).focus().autocomplete(categ_autocomplete_opt);
+            var newRow = $('<tr></tr>');
+            var tdSelect = $('<td></td>');
+            var selectEl = $('<select name="categoryId=[]" id="categoryId_' + categCount + '"></select>');
+            selectEl.html($('#categoryList').html());
+            tdSelect.append(selectEl);
+            var tdRemove = $('<td><button id="removeCategory_' + categCount + '" class="removeCategory">Rimuovi</button></td>')
+            newRow.append(tdSelect).append(tdRemove);
+            $('#categoriesTable tbody').append(newRow);
         });
 
         $('#categoriesTable').on('click', '.removeCategory', function(event) {
@@ -97,11 +74,10 @@ CR.RecipeStore = (function() {
             $(this).parent().parent('tr').remove();
         });
 
-        $('.category').autocomplete(categ_autocomplete_opt);
-
         $('#newIngrBtn').on('click', function(event) {
             event.preventDefault();
             $('#ingrModal').show();
+            $('#ingrModal input').focus();
         });
 
         $('#ingrModal .close').on('click', function(event) {
@@ -111,6 +87,7 @@ CR.RecipeStore = (function() {
         $('#newCategBtn').on('click', function(event) {
             event.preventDefault();
             $('#categModal').show();
+            $('#categModal input').focus();
         });
 
         $('#categModal .close').on('click', function(event) {
@@ -135,6 +112,7 @@ CR.RecipeStore = (function() {
         })
         .always(function() {
             $('#ingrModal').hide();
+            $('#ingrModal input').val('');
         });
     };
 
@@ -145,6 +123,7 @@ CR.RecipeStore = (function() {
         })
         .always(function() {
             $('#categModal').hide();
+            $('#categModal input').val('');
         });
     };
 

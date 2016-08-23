@@ -4,7 +4,7 @@ require_once '../../main/functions.php';
 if (isset($_GET['method']) && $_GET['method'] === 'add') {
     $recipeId = $_POST['recipeId'];
     $isEdit = false;
-    
+
     if ($recipeId !== '') {
         $isEdit = true;
     }
@@ -28,11 +28,19 @@ if (isset($_GET['method']) && $_GET['method'] === 'add') {
         $volumeNum = issetor($_POST['volumeNum'], 0);
         $yearNum = issetor($_POST['yearNum'], 0);
 
-        addrecipe($name, $ingredients, $categories, $volumeNum, $yearNum);        
+        addrecipe($name, $ingredients, $categories, $volumeNum, $yearNum);
+    }
+} else {
+    $recId = $_GET['recipeId'];
+
+    if (trim($recId) !== '') {
+        $recipe_title = get_recipe_title(trim($recId));
+        $recipe_ingredient = get_recipe_ingredients(trim($recId));
     }
 }
 
 $bookList = bookList();
+$categoryList = categorylist()->fetchAll(); // FIXME find a better way to do this
 
 ?>
 
@@ -82,12 +90,19 @@ include '../header.php';
 
 <div id="recipeDetailsContainer">
     <form action="store.php?method=add" method="POST">
+
+        <datalist id="categoryList">
+            <?php foreach ($categoryList as $row) { ?>
+                <option value="<?php echo htmlspecialchars($row['ID']); ?>"><?php echo $row['NOME']; ?></option>
+            <?php } ?>
+        </datalist>
+
         <h2>Dati Ricetta</h2>
         <input type="hidden" name="recipeId" value="<?php echo issetor($recId); ?>">
         <span>Nome:</span>
-        <input type="text" name="recipeName" style="width: 30%;" placeholder="Nome ricetta..." required="" autofocus="autofocus">
+        <input type="text" name="recipeName" style="width: 30%;" placeholder="Nome ricetta..." required="" autofocus="autofocus" value="<?php echo htmlspecialchars(issetor($recipe_title)); ?>">
         <br/>
-        
+
         <h3>Ingredienti</h3>
         <table id="ingredientsTable">
             <thead>
@@ -95,13 +110,25 @@ include '../header.php';
                 <th style="text-align: center">Azione</th>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <input type="hidden" name="ingredientId[]" id="ingredientId_1">
-                        <input type="text" autocomplete="off" class="ingredient" name="ingredientName[]" id="ingredientName_1">
-                    </td>
-                    <td><button id="removeIngredient_1" class="removeIngredient">Rimuovi</button></td>
-                </tr>
+                <?php if (isset($recipe_ingredient)) {
+                    $rowCount = 1;
+                    foreach ($recipe_ingredient as $row) { ?>
+                        <tr>
+                            <td>
+                                <input type="hidden" name="ingredientId[]" id="ingredientId_<?php echo $rowCount; ?>" value="<?php echo htmlspecialchars($row['ID']); ?>">
+                                <input type="text" autocomplete="off" class="ingredient" name="ingredientName[]" id="ingredientName_<?php echo $rowCount; ?>" value="<?php echo htmlspecialchars($row['NOME']); ?>">
+                                <td><button type="button" id="removeIngredient_<?php echo $rowCount; ?>">Rimuovi</button></td>
+                            </td>
+                        </tr>
+                <?php $rowCount++;}} else { ?>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="ingredientId[]" id="ingredientId_1">
+                            <input type="text" autocomplete="off" class="ingredient" name="ingredientName[]" id="ingredientName_1">
+                        </td>
+                        <td><button id="removeIngredient_1" class="removeIngredient">Rimuovi</button></td>
+                    </tr>
+                <?php } ?>
             </tbody>
             <tfoot>
                 <tr>
@@ -122,8 +149,11 @@ include '../header.php';
             <tbody>
                 <tr>
                     <td>
-                        <input type="hidden" name="categoryId[]" id="categoryId_1">
-                        <input type="text" autocomplete="off" class="category" name="categoryName[]" id="categoryName_1">
+                        <select name="categoryId[]" id="categoryId_1">
+                        <?php foreach ($categoryList as $row) { ?>
+                            <option value="<?php echo htmlspecialchars($row['ID']); ?>"><?php echo $row['NOME']; ?></option>
+                        <?php } ?>
+                        </select>
                     </td>
                     <td><button id="removeCategory_1" class="removeCategory">Rimuovi</button></td>
                 </tr>
@@ -144,7 +174,7 @@ include '../header.php';
             <label for="bookName">Titolo:</label>
             <select name="bookName">
             <?php foreach ($bookList as $row) { ?>
-                <option value="<?php echo htmlspecialchars($row['ID']); ?>"><?php echo $row['TITOLO']; ?></option>                
+                <option value="<?php echo htmlspecialchars($row['ID']); ?>"><?php echo $row['TITOLO']; ?></option>
             <?php } ?>
             </select>
         </p>

@@ -217,4 +217,22 @@ function search_recipe($recipeTitle, $ingredientName, $categoryId) {
     return $statement;
 }
 
+function get_recipe_ingredients($recId) {
+    $pdo = Database::connect();
+    $sql = 'SELECT I.ID, I.NOME FROM INGREDIENTE I JOIN RICETTA_INGREDIENTE RI ON I.ID = RI.ID_INGREDIENTE WHERE RI.ID_RICETTA = ?';
+    $statement = $pdo->prepare($sql);
+    Database::disconnect();
+    $statement->execute(array($recId));
+    return $statement->fetchAll();
+}
+
+function get_recipe_title($recId) {
+    $pdo = Database::connect();
+    $sql = 'SELECT TITOLO FROM RICETTA WHERE ID = ?';
+    $statement = $pdo->prepare($sql);
+    Database::disconnect();
+    $statement->execute(array($recId));
+    return $statement->fetch()['TITOLO'];
+}
+
 ?>
