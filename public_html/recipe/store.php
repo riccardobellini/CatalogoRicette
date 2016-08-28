@@ -36,6 +36,7 @@ if (isset($_GET['method']) && $_GET['method'] === 'add') {
     if (trim($recId) !== '') {
         $recipe_title = get_recipe_title(trim($recId));
         $recipe_ingredient = get_recipe_ingredients(trim($recId));
+        $recipe_category = get_recipe_categories(trim($recId));
     }
 }
 
@@ -147,6 +148,25 @@ include '../header.php';
                 <th style="text-align: center">Azione</th>
             </thead>
             <tbody>
+            <?php if (isset($recipe_category)) {
+                $rowCount = 1;
+                foreach ($recipe_category as $rec_cat_row) { ?>
+                <tr>
+                    <td>
+                        <select name="categoryId[]" id="categoryId_<?php echo $rowCount; ?>">
+                        <?php foreach ($categoryList as $row) { ?>
+                            <option value="<?php echo htmlspecialchars($row['ID']); ?>"
+                            <?php if ($row['ID'] === $rec_cat_row['ID']) {
+                                echo 'selected="selected"';
+                            } ?>
+                            >
+                            <?php echo $row['NOME']; ?></option>
+                        <?php } ?>
+                        </select>
+                    </td>
+                    <td><button id="removeCategory_<?php echo $rowCount; ?>" class="removeCategory">Rimuovi</button></td>
+                </tr>
+            <?php $rowCount++;}} else { ?>
                 <tr>
                     <td>
                         <select name="categoryId[]" id="categoryId_1">
@@ -157,6 +177,7 @@ include '../header.php';
                     </td>
                     <td><button id="removeCategory_1" class="removeCategory">Rimuovi</button></td>
                 </tr>
+            <?php } ?>
             </tbody>
             <tfoot>
                 <tr>

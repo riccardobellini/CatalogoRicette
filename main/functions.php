@@ -235,4 +235,13 @@ function get_recipe_title($recId) {
     return $statement->fetch()['TITOLO'];
 }
 
+function get_recipe_categories($recId) {
+    $pdo = Database::connect();
+    $sql = 'SELECT C.ID, C.NOME FROM CATEGORIA C JOIN RICETTA_CATEGORIA RC ON C.ID = RC.ID_CATEGORIA WHERE RC.ID_RICETTA = ?';
+    $statement = $pdo->prepare($sql);
+    Database::disconnect();
+    $statement->execute(array($recId));
+    return $statement->fetchAll();
+}
+
 ?>
