@@ -1,5 +1,7 @@
 <?php
-include '../header.php';
+if (!isset($_GET['ajax'])) {
+    include '../header.php';
+}
 require_once '../../main/functions.php';
 ?>
 
@@ -11,25 +13,33 @@ function _performupdate() {
 
     if ($id !== '' && $name !== '') {
         editcategory($id, $name);
-        header("Location: list.php");
     }
+    return $id;
 }
 
 function _performinsert() {
     $name = $_POST['categoryName'];
     if ($name !== '') {
-        addcategory($name);
-        header("Location: list.php");
+        return addcategory($name);
     }
 }
 
 $name = $_POST['categoryName'];
 if ($name !== '') {
     $method = $_GET['method'];
+    $categId = '';
     if ($method === 'add') {
-        _performinsert();
+        $categId = _performinsert();
     } else if ($method === 'edit') {
-        _performupdate();
+        $categId = _performupdate();
+    }
+
+    if (isset($_GET['ajax'])) {
+        header('Content-Type: application/json');
+        $responseData = [ 'id' => $categId, 'nome' => htmlspecialchars($name)];
+        echo json_encode($responseData);
+    } else {
+        header('Location: list.php');
     }
 }
 ?>

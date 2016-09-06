@@ -30,7 +30,7 @@ if (isset($_GET['method']) && $_GET['method'] === 'add') {
 
         addrecipe($name, $ingredients, $categories, $volumeNum, $yearNum);
     }
-} else {
+} else if (isset($_GET['recipeId'])) {
     $recId = $_GET['recipeId'];
 
     if (trim($recId) !== '') {

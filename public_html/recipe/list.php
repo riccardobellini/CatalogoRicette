@@ -22,7 +22,7 @@ require_once '../../main/functions.php';
 </div>
 
 
-<a href="store.php">Aggiungi libro...</a>
+<a href="store.php">Aggiungi ricetta...</a>
 
 
 <?php include '../footer.php'; ?>

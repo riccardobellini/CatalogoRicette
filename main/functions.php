@@ -54,6 +54,8 @@ function addcategory($name) {
     $statement = $pdo->prepare($sql);
     Database::disconnect();
     $statement->execute(array($name));
+    $id = $pdo->lastInsertId();
+    return $id;
 }
 
 function booklist() {

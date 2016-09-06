@@ -117,9 +117,29 @@ CR.RecipeStore = (function() {
     };
 
     function _addNewCategory() {
-        $.post('../category/store.php?method=add', $('#newCategForm').serialize())
-        .fail(function() {
-            console.log("error");
+        $.ajax({
+            url : '../category/store.php?method=add&ajax=Y',
+            datatype : 'json',
+            method : 'POST',
+            data: $('#newCategForm').serialize()
+        })
+        .done(function(data) {
+            console.log(data.id + ' ' + data.nome);
+            // add the new option to all the select tags
+            $('#categoriesTable select').each(function(index, el) {
+                $(this).append($('<option>', {
+                    value : data.id,
+                    text : data.nome
+                }));
+            });
+            // append also to category list (datalist)
+            $('#categoryList').append($('<option>', {
+                value : data.id,
+                text : data.nome
+            }));
+        })
+        .fail(function(xhr, status, error) {
+            console.log("error: " + xhr.responseText);
         })
         .always(function() {
             $('#categModal').hide();
